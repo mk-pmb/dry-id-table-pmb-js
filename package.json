@@ -1,0 +1,30 @@
+{ "name": "dry-id-table-pmb",
+  "version": "0.1.0",
+  "description": "A data format specialized for storing enumerated translation tables with repeating words or phrases.",
+  "keywords": [ "i18n", "table" ],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/dry-id-table-pmb-js/#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/dry-id-table-pmb-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/dry-id-table-pmb-js/issues"
+  },
+  "contributors": [],
+
+  "private": false, "license": "ISC",
+
+  "main": "dry.js",
+  "scripts": { "test": "nodejs test/all.js" },
+  "directories": { "test": "test" },
+
+  "dependencies": {},
+  "devDependencies": {
+    "equal-pmb": "^0.1.6"
+  },
+
+
+  "npm vs. BOM = Unexpected token": "-*- coding: UTF-8 -*-"
+}
