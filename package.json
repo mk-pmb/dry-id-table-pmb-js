@@ -1,5 +1,5 @@
 { "name": "dry-id-table-pmb",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A data format specialized for storing enumerated translation tables with repeating words or phrases.",
   "keywords": [ "i18n", "table" ],
 

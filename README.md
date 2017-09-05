@@ -25,8 +25,7 @@ Usage
 Format specs
 ------------
 
-* Names of content variables have to start with a letter `a`…`z`, `A`…`Z`
-  or a printable character with a Unicode codepoint greater than U+00A0.
+* Names of content variables have to start with a letter `a`…`z` or `A`…`Z`.
   * Other variable names are reserved for control, configuration and syntax
     purposes.
     Nonetheless, interpreters may treat any subset thereof as content

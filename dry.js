@@ -17,10 +17,10 @@ EX = function swell(reci) {
     '#': 0,     // incrementing number
     '+': 0,     // increment distance
     '*': 1,     // repeats: how many times (total) to render this step
-    '|': [],    // row cells template
-    '|fmt': false,    // post-format name
-    '|cfg': {}, // custom config
-    '$': '$',   // easily escape $ by duplicating it
+    '|':    null,   // row cells template
+    '|fmt': null,   // post-format name
+    '|cfg': null,   // custom config
+    '$': '$',       // easily escape $ by duplicating it
   };
   var table = [];
   reci.forEach(function (step) {
@@ -62,20 +62,30 @@ renderVars.ins = function (m, nameLong, nameChar) {
   var n = (nameLong || nameChar), v = ifempty(keep[n], null);
   if (v === null) {
     if (cfg('undefVar') === 'orig') { return m; }
-    fail('Cannot insert undefined variable: ' + n);
+    fail('Cannot insert undefined variable: ' + m);
   }
   return renderVars(v);
 };
+renderVars.cell = function (c, i) {
+  keep[','] = keep[i];
+  return renderVars(c);
+};
 
 
-
-function updateTblRowTpl(upd) {
-  var tpl = keep['|'];
-  if (upd) {
-    if (upd.substr(0, 1) === '$') { upd = renderVars(upd); }
-    split1ch(upd).forEach(function (c, i) { if (c) { tpl[i] = c; } });
-  }
-  return tpl;
+function updateRowTpl(upd) {
+  if (!upd) { return; }
+  if (upd.substr(0, 1) === '$') { upd = renderVars(upd); }
+  var tpl = (keep['|'] || []);
+  split1ch(upd).forEach(function (c, i) {
+    if (!c) { return; }
+    tpl[i] = c;
+    keep['|' + i] = c;
+  });
+  keep['°'] = tpl[0];
+  keep['¹'] = tpl[1];
+  keep['²'] = tpl[2];
+  keep['³'] = tpl[3];
+  keep['|'] = tpl;
 }
 
 
@@ -99,22 +109,29 @@ EX.recipeStep = function (step) {
   }
   if (isStr(step)) { step = [step]; }
   if (isAry(step)) { step = Object.assign({ '|': step[0] }, step.slice(1)); }
-  var rowTpl = updateTblRowTpl(step['|']), repeats, rows = [], rendered, fmt;
-  step['|'] = rowTpl;
-  step['='] = rowTpl[0];
-  if (step['|fmt']) { step['|fmt'] = split1ch(step['|fmt']); }
-  Object.assign(keep, step);
-  fmt = keep['|fmt'];
-  if (fmt) { postFormat.fmt = fmt; }
+  var repeat, rows = [], rendered, fmt = keep['|fmt'];
+  Object.assign(keep, step,
+    // protect special slots:
+    { '|' : keep['|'] });
+  // Now we can calculate stuff that might want to renderVars():
+  updateRowTpl(step['|']);
+  if (step['|fmt']) {
+    fmt = split1ch(step['|fmt']);
+    keep['|fmt'] = fmt;
+    postFormat.fmt = fmt;
+  }
 
-  for (repeats = (+keep['*'] || 0); repeats > 0; repeats -= 1) {
+  function renderRow() {
     keep['#'] += keep['+'];
+    if (!keep['|']) { return; }
     //console.log(keep);
-    rendered = rowTpl.map(renderVars);
+    rendered = keep['|'].map(renderVars.cell);
     //console.log(rowTpl, rendered);
     if (fmt) { rendered = rendered.map(postFormat); }
     rows.push(rendered);
   }
+
+  for (repeat = (+keep['*'] || 0); repeat > 0; repeat -= 1) { renderRow(); }
   return rows;
 };
 
